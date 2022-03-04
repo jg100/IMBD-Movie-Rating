@@ -9,14 +9,11 @@ tokenized_neg = []
 
 
 def remove_stop_words(tokenized_text):
-    stop_words = list(stopwords.words("english"))
-    for w in tokenized_text:
-        if w in stop_words:
-            print(w + " removed ")
-            tokenized_text.remove(w)
-            continue
-
-    return tokenized_text
+    stop_words = set(stopwords.words("english"))
+    tokenized_set = set(tokenized_text)
+    set_difference = tokenized_set - stop_words
+    print(set_difference)
+    return tokenized_set - stop_words
 
 
 # Traverse pos train folder text files
@@ -28,7 +25,9 @@ for filename in os.listdir(directoryPos):
 
         # tokenize data
         text_data = file.read().lower().split(' ')
-        tokenized_pos.append(text_data)
+
+        #text_data = remove_stop_words(text_data)
+        tokenized_pos += text_data
 
         continue
     else:
@@ -36,6 +35,4 @@ for filename in os.listdir(directoryPos):
 
 print(len(tokenized_pos))
 
-tokenized_pos = remove_stop_words(tokenized_pos)
 
-print(len(tokenized_pos))
