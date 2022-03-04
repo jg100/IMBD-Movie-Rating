@@ -1,16 +1,41 @@
-# This is a sample Python script.
+import os
+import nltk
+from nltk.corpus import stopwords
 
-# Press ⌃R to execute it or replace it with your code.
-# Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
+directoryPos = "./aclImdb/train/pos"
+
+tokenized_pos = []
+tokenized_neg = []
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press ⌘F8 to toggle the breakpoint.
+def remove_stop_words(tokenized_text):
+    stop_words = list(stopwords.words("english"))
+    for w in tokenized_text:
+        if w in stop_words:
+            print(w + " removed ")
+            tokenized_text.remove(w)
+            continue
+
+    return tokenized_text
 
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
+# Traverse pos train folder text files
+for filename in os.listdir(directoryPos):
+    if filename.endswith(".txt"):
+        # Open the text file
+        filePath = directoryPos + "/" + filename
+        file = open(filePath, "r")
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+        # tokenize data
+        text_data = file.read().lower().split(' ')
+        tokenized_pos.append(text_data)
+
+        continue
+    else:
+        continue
+
+print(len(tokenized_pos))
+
+tokenized_pos = remove_stop_words(tokenized_pos)
+
+print(len(tokenized_pos))
