@@ -6,6 +6,7 @@ from BoW import *
 import numpy as np
 from sklearn.feature_extraction.text import CountVectorizer
 import pandas as pd
+import re
 
 
 def main():
@@ -20,19 +21,22 @@ def main():
         if filename.endswith(".txt"):
             # Open the text file
             file_path = directory_pos + "/" + filename
-            file = open(file_path, "r")
+            file = open(file_path, "r", encoding="utf8")
 
             file_data = file.read().lower()
             # tokenize data
 
             tokenizer = RegexpTokenizer(r'\w+')
+            
+            # remove special characters leaving only word and apostrophe
+            file_data = re.sub("[^A-Za-z']+",' ',file_data)
             text_data = tokenizer.tokenize(file_data)
             stop_words = stopwords.words("english")
 
-            for w in text_data:
-                if w in stop_words or len(w) <= 1 or w.startswith(r'[0-9]'):
-                    print("Removed: " + w)
-                    text_data.remove(w)
+            # for w in text_data:
+            #     if w in stop_words or len(w) <= 1 or w.startswith(r'[0-9]'):
+            #         print("Removed: " + w)
+            #         text_data.remove(w)
 
             # text_data = remove_stop_words(text_data)
             # pos_documents.append(str(text_data))
