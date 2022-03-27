@@ -9,11 +9,10 @@ directoryPos = "./aclImdb/train/pos"
 tokenized_pos = []
 tokenized_neg = []
 
-
 def remove_stop_words(tokenized_text):
     stop_words = set(stopwords.words("english"))
     tokenized_set = set(tokenized_text)
-    set_difference = tokenized_set - stop_words
+
     # print(set_difference)
     return tokenized_set - stop_words
 
