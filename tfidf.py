@@ -5,23 +5,20 @@ import re
 
 directoryPos = "./aclImdb/train/pos"
 directoryNeg = "./aclImdb/train/neg"
-testPos =  "./aclImdb/test/pos"
-testNeg = "./aclImdb/test/neg"
+testPosDirectory =  "./aclImdb/test/pos"
+testNegDirectory = "./aclImdb/test/neg"
 
-tokenized_pos = []
-tokenized_neg = []
 corpus = []
 
-test_y = []
+review_actual_val = []
 
-def addToCorpus(path):
+def addToCorpus(path, reviewName):
     # Traverse pos train folder text files
-    reviewList = os.listdir(path)
-    testList = reviewList[0:12500]
-    for x in testList:
+    
+    for x in reviewName:
         if x.endswith(".txt"):
             rating = re.search(r"(?<=_)\d*", x).group()
-            test_y.append(rating)
+            review_actual_val.append(rating)
 
             # Open the text file
             filePath = path + "/" + x
@@ -51,26 +48,38 @@ def result(arr1, arr2):
 
     return
 
-addToCorpus(directoryPos)
-addToCorpus(directoryNeg)
+def test(mnb, testPos, testNeg, firstIndex, lastIndex):
+    global corpus
+    corpus = []
+    global review_actual_val
+    review_actual_val = []
+
+    posReviewName = os.listdir(testPos)[firstIndex: lastIndex]
+    addToCorpus(testPos, posReviewName)
+    negReviewName = os.listdir(testNeg)[firstIndex: lastIndex]
+    addToCorpus(testNeg, negReviewName)
+
+    tfidf_test = tfidf.transform(corpus)
+    testResult = mnb.predict(tfidf_test)
+
+    result(review_actual_val, testResult)
+    return
+
+posReviewName = os.listdir(directoryPos)[0:2000]
+addToCorpus(directoryPos, posReviewName)
+negReviewName = os.listdir(directoryNeg)[0:2000]
+addToCorpus(directoryNeg, negReviewName)
 
 tfidf = TfidfVectorizer()
 
 tfidf_train = tfidf.fit_transform(corpus)
 
-MNB = MultinomialNB()
-MNB.fit(tfidf_train, test_y)
+MNB = MultinomialNB(alpha = 1)
 
-# print(test_y)
-# print(testResult)
+MNB.fit(tfidf_train, review_actual_val)
 
-corpus = []
-
-addToCorpus(testPos)
-addToCorpus(testNeg)
-
-tfidf_test = tfidf.transform(corpus)
-
-testResult = MNB.predict(tfidf_test)
-
-result(test_y, testResult)
+test(MNB, testPosDirectory, testNegDirectory, 0, 1000)
+test(MNB, testPosDirectory, testNegDirectory, 1000, 2000)
+test(MNB, testPosDirectory, testNegDirectory, 2000, 3000)
+test(MNB, testPosDirectory, testNegDirectory, 3000, 4000)
+test(MNB, testPosDirectory, testNegDirectory, 4000, 5000)
